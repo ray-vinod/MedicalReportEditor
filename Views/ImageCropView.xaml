@@ -1,0 +1,118 @@
+<Window x:Class="MedicalReportEditor.Views.ImageCropView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Image Cropping Tool"
+        Height="600"
+        Width="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <ToolBar Grid.Row="0"
+                 Margin="5">
+            <Button Content="Open Image"
+                    Command="{Binding OpenImageCommand}"/>
+
+            <Separator/>
+
+            <TextBlock Text="Aspect Ratio:"
+                       VerticalAlignment="Center"
+                       Margin="5,0"/>
+            <ComboBox ItemsSource="{Binding AspectRatios}"
+                      SelectedItem="{Binding SelectedAspectRatio}"
+                      Width="100"/>
+
+            <Button Content="Auto Detect"
+                    Command="{Binding AutoDetectCommand}"/>
+            <Button Content="Reset"
+                    Command="{Binding ResetCropCommand}"/>
+        </ToolBar>
+
+        <!-- Image Display -->
+        <ScrollViewer Grid.Row="1"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <Border Background="Gray"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Grid>
+                    <Image Source="{Binding ImageSource}"
+                           Stretch="None"/>
+
+                    <!-- Crop Rectangle -->
+                    <Rectangle Stroke="Red"
+                               StrokeThickness="2"
+                               StrokeDashArray="4 2"
+                               Fill="#40FF0000"
+                               Visibility="{Binding IsCropVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Rectangle.RenderTransform>
+                            <TranslateTransform X="{Binding CropArea.X}"
+                                                Y="{Binding CropArea.Y}"/>
+                        </Rectangle.RenderTransform>
+                        <Rectangle.Width>
+                            <Binding Path="CropArea.Width"/>
+                        </Rectangle.Width>
+                        <Rectangle.Height>
+                            <Binding Path="CropArea.Height"/>
+                        </Rectangle.Height>
+                    </Rectangle>
+                </Grid>
+            </Border>
+        </ScrollViewer>
+
+        <!-- Bottom Panel -->
+        <Grid Grid.Row="2"
+              Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Crop Info -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal">
+                <TextBlock Text="Position: "
+                           Margin="5,0"/>
+                <TextBlock Text="{Binding CropArea.X, StringFormat=N0}"
+                           Margin="0,0,10,0"/>
+                <TextBlock Text="{Binding CropArea.Y, StringFormat=N0}"/>
+
+                <TextBlock Text="Size: "
+                           Margin="20,0,5,0"/>
+                <TextBlock Text="{Binding CropArea.Width, StringFormat=N0}"
+                           Margin="0,0,5,0"/>
+                <TextBlock Text="x"/>
+                <TextBlock Text="{Binding CropArea.Height, StringFormat=N0}"
+                           Margin="5,0,0,0"/>
+
+                <TextBlock Text="Original: "
+                           Margin="20,0,5,0"/>
+                <TextBlock Text="{Binding ImageWidth}"
+                           Margin="0,0,5,0"/>
+                <TextBlock Text="x"/>
+                <TextBlock Text="{Binding ImageHeight}"/>
+            </StackPanel>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal">
+                <Button Content="Apply Crop"
+                        Command="{Binding ApplyCropCommand}"
+                        Margin="5"
+                        Padding="10,5"
+                        Background="Green"
+                        Foreground="White"/>
+
+                <Button Content="Cancel"
+                        Click="CancelButton_Click"
+                        Margin="5"
+                        Padding="10,5"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
