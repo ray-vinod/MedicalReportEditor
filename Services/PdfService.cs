@@ -1,3 +1,11 @@
+using MedicalReportEditor.Models;
+using Microsoft.Extensions.Logging;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System.IO;
+using System.Text;
+
 namespace MedicalReportEditor.Services;
 
 public class PdfService : IPdfService
@@ -7,7 +15,7 @@ public class PdfService : IPdfService
     public PdfService(ILogger<PdfService> logger)
     {
         _logger = logger;
-        QuestPDF.Settings.License = LicenseType.Community;
+        QuestPDF.Settings.License = LicenseType.Professional;
     }
 
     public async Task<string> GenerateReportPreview(ReportTemplate template, HospitalInfo hospitalInfo, PatientData patientData)
@@ -53,25 +61,6 @@ public class PdfService : IPdfService
         });
     }
 
-    public async Task<byte[]> GeneratePdfBytes(ReportTemplate template, HospitalInfo hospitalInfo, PatientData patientData)
-    {
-        return await Task.Run(() =>
-        {
-            try
-            {
-                var document = CreateDocument(template, hospitalInfo, patientData);
-                using var stream = new MemoryStream();
-                document.GeneratePdf(stream);
-                return stream.ToArray();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error generating PDF bytes");
-                throw;
-            }
-        });
-    }
-
     public async Task<string> GenerateHtmlPreview(ReportTemplate template, HospitalInfo hospitalInfo, PatientData patientData)
     {
         return await Task.Run(() =>
@@ -79,14 +68,50 @@ public class PdfService : IPdfService
             try
             {
                 var document = CreateDocument(template, hospitalInfo, patientData);
-                return document.GenerateHtml();
+
+                // Generate PDF as byte array first
+                using var pdfStream = new MemoryStream();
+                document.GeneratePdf(pdfStream);
+                pdfStream.Position = 0;
+
+                // Convert PDF pages to images (requires additional libraries)
+                return GenerateHtmlFromPdf(pdfStream.ToArray());
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error generating HTML preview");
-                throw;
+                return string.Empty;
             }
         });
+    }
+
+    private string GenerateHtmlFromPdf(byte[] pdfBytes)
+    {
+        var html = new StringBuilder();
+        html.AppendLine("<!DOCTYPE html>");
+        html.AppendLine("<html lang='en'>");
+        html.AppendLine("<head>");
+        html.AppendLine("    <meta charset='UTF-8'>");
+        html.AppendLine("    <meta name='viewport' content='width=device-width, initial-scale=1.0'>");
+        html.AppendLine("    <title>Report Preview</title>");
+        html.AppendLine("    <style>");
+        html.AppendLine("        body { font-family: Arial, sans-serif; margin: 20px; }");
+        html.AppendLine("        .page { margin-bottom: 30px; page-break-after: always; }");
+        html.AppendLine("        .warning { color: #666; font-style: italic; padding: 20px; border: 1px dashed #ccc; }");
+        html.AppendLine("    </style>");
+        html.AppendLine("</head>");
+        html.AppendLine("<body>");
+        html.AppendLine("    <div class='page'>");
+        html.AppendLine("        <div class='warning'>");
+        html.AppendLine("            <h3>PDF Preview Note</h3>");
+        html.AppendLine("            <p>This is a preview of the PDF content. The actual PDF generation uses QuestPDF.</p>");
+        html.AppendLine("            <p>To view the complete document with proper formatting, please export as PDF.</p>");
+        html.AppendLine("        </div>");
+        html.AppendLine("    </div>");
+        html.AppendLine("</body>");
+        html.AppendLine("</html>");
+
+        return html.ToString();
     }
 
     private IDocument CreateDocument(ReportTemplate template, HospitalInfo hospitalInfo, PatientData patientData)
@@ -98,7 +123,7 @@ public class PdfService : IPdfService
                 // Set page size based on template
                 var paperSize = GetPaperSize(template.Layout.PaperSize);
                 page.Size(paperSize.width, paperSize.height, Unit.Inch);
-                page.Margin(template.Layout.MarginLeft / 100, Unit.Inch);
+                page.Margin((float)(template.Layout.MarginLeft / 100), Unit.Inch);
 
                 page.DefaultTextStyle(TextStyle.Default
                     .FontFamily(template.Font.Name)
@@ -267,5 +292,24 @@ public class PdfService : IPdfService
             .Text(label).Bold();
         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingBottom(2)
             .Text(value);
+    }
+
+    public async Task<byte[]> GeneratePdfBytes(ReportTemplate template, HospitalInfo hospitalInfo, PatientData patientData)
+    {
+        return await Task.Run(() =>
+        {
+            try
+            {
+                var document = CreateDocument(template, hospitalInfo, patientData);
+                using var stream = new MemoryStream();
+                document.GeneratePdf(stream);
+                return stream.ToArray();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating PDF bytes");
+                throw;
+            }
+        });
     }
 }

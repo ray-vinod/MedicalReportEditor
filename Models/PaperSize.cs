@@ -2,7 +2,7 @@ namespace MedicalReportEditor.Models;
 
 public class PaperSize
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public int Value { get; set; }
     public double Width { get; set; }
     public double Height { get; set; }

@@ -1,3 +1,7 @@
+using System.Globalization;
+using System.Windows.Data;
+using System.Windows.Media;
+
 namespace MedicalReportEditor.Converters;
 
 public class BoolToForegroundConverter : IValueConverter

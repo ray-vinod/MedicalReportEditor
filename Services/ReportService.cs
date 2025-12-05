@@ -1,3 +1,11 @@
+using MedicalReportEditor.Enums;
+using MedicalReportEditor.Models;
+using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
+
 namespace MedicalReportEditor.Services;
 
 public class ReportService : IReportService
@@ -26,7 +34,7 @@ public class ReportService : IReportService
 
             if (serializer.CanDeserialize(reader))
             {
-                return (ReportCollection)serializer.Deserialize(reader);
+                return (ReportCollection)serializer.Deserialize(reader)!;
             }
 
             return new ReportCollection();
@@ -132,7 +140,7 @@ public class ReportService : IReportService
         serializer.Serialize(stream, sourceTemplate);
         stream.Position = 0;
 
-        var clonedTemplate = (ReportTemplate)serializer.Deserialize(stream);
+        var clonedTemplate = (ReportTemplate)serializer.Deserialize(stream)!;
         clonedTemplate.Name = newName;
         clonedTemplate.ReportInfo.Author = "Duplicated from " + sourceName;
 

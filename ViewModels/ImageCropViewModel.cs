@@ -1,12 +1,21 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MedicalReportEditor.Models;
+using MedicalReportEditor.Services;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Windows.Media.Imaging;
+
 namespace MedicalReportEditor.ViewModels;
 
 public partial class ImageCropViewModel : ObservableObject
 {
     private readonly IImageService _imageService;
-    private string _currentImagePath;
+    private string _currentImagePath = string.Empty;
 
     [ObservableProperty]
-    private BitmapImage _imageSource;
+    private BitmapImage _imageSource = new();
 
     [ObservableProperty]
     private CropArea _cropArea = new();
@@ -24,23 +33,21 @@ public partial class ImageCropViewModel : ObservableObject
     private int _imageHeight;
 
     public ObservableCollection<string> AspectRatios { get; } = new()
-        {
-            "Free",
-            "Square (1:1)",
-            "4:3",
-            "16:9",
-            "A4 (1.414)",
-            "Letter (1.294)"
-        };
+    {
+          "Free",
+          "Square (1:1)",
+          "4:3",
+          "16:9",
+          "A4 (1.414)",
+          "Letter (1.294)"
+    };
 
     public ObservableCollection<string> PaperSizes { get; } = new()
-        {
-            "A4 (210x297mm)",
-            "Letter (216x279mm)",
-            "Legal (216x356mm)",
-            "A3 (297x420mm)",
-            "A5 (148x210mm)"
-        };
+    {
+        "A4 (210x297mm)",
+        "Letter (216x279mm)",
+        "Legal (216x356mm)"
+    };
 
     public ImageCropViewModel(IImageService imageService)
     {

@@ -1,9 +1,17 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MedicalReportEditor.Models;
+using MedicalReportEditor.Services;
+using System.IO;
+using System.Windows;
+using System.Windows.Media.Imaging;
+
 namespace MedicalReportEditor.ViewModels;
 
 public partial class HospitalSettingsViewModel : ObservableObject
 {
     private readonly IHospitalService _hospitalService;
-    private HospitalInfo _originalInfo;
+    private HospitalInfo? _originalInfo;
 
     [ObservableProperty]
     private string _hospitalName = "";
@@ -27,7 +35,7 @@ public partial class HospitalSettingsViewModel : ObservableObject
     private string _hospitalLogoPath = "";
 
     [ObservableProperty]
-    private BitmapImage _logoPreview;
+    private BitmapImage? _logoPreview;
 
     [ObservableProperty]
     private string _emailAddress = "";

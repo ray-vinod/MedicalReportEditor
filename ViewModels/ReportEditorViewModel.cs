@@ -1,9 +1,19 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MedicalReportEditor.Models;
+using MedicalReportEditor.Services;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Xml;
+using System.Xml.Serialization;
+
 namespace MedicalReportEditor.ViewModels;
 
 public partial class ReportEditorViewModel : ObservableObject
 {
     private readonly IReportService _reportService;
-    private ReportTemplate _currentTemplate;
+    private ReportTemplate _currentTemplate = new();
     private readonly Stack<string> _undoStack = new();
     private readonly Stack<string> _redoStack = new();
 
@@ -11,7 +21,7 @@ public partial class ReportEditorViewModel : ObservableObject
     private string _xmlContent = "";
 
     [ObservableProperty]
-    private ObservableCollection<ReportTemplate> _templates = new();
+    private ObservableCollection<ReportTemplate> _templates = [];
 
     [ObservableProperty]
     private string _selectedTemplateName = "";
@@ -41,7 +51,7 @@ public partial class ReportEditorViewModel : ObservableObject
     {
         _reportService = reportService;
         _selectedPaperSize = _paperSizes.FirstOrDefault(p => p.Value == 9) ?? _paperSizes.First();
-        LoadTemplates();
+        _ = LoadTemplates();
     }
 
     [RelayCommand]
@@ -75,8 +85,8 @@ public partial class ReportEditorViewModel : ObservableObject
         IsDirty = false;
 
         // Update selected paper size
-        SelectedPaperSize = _paperSizes.FirstOrDefault(p => p.Value == template.Layout.PaperSize)
-            ?? _paperSizes.First();
+        SelectedPaperSize = PaperSizes.FirstOrDefault(p => p.Value == template.Layout.PaperSize)
+            ?? PaperSizes.First();
     }
 
     partial void OnSelectedTemplateNameChanged(string value)
@@ -273,11 +283,11 @@ public partial class ReportEditorViewModel : ObservableObject
         {
             var serializer = new XmlSerializer(typeof(ReportTemplate));
             using var reader = new StringReader(xml);
-            return (ReportTemplate)serializer.Deserialize(reader);
+            return (ReportTemplate)serializer.Deserialize(reader)!;
         }
         catch (Exception)
         {
-            return null;
+            return null!;
         }
     }
 }

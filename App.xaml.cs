@@ -1,5 +1,7 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using MedicalReportEditor.Services;
+using MedicalReportEditor.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Windows;
 
 namespace MedicalReportEditor;
@@ -7,6 +9,10 @@ namespace MedicalReportEditor;
 public partial class App : Application
 {
     private readonly IHost _host;
+
+    public static IServiceProvider Services =>
+        ((App)Current)._host?.Services
+        ?? throw new InvalidOperationException("Service provider not initialized.");
 
     public App()
     {

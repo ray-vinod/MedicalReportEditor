@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using System.Xml.Serialization;
+
 namespace MedicalReportEditor.Models;
 
 [XmlRoot("Reports")]

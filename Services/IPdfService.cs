@@ -1,3 +1,5 @@
+using MedicalReportEditor.Models;
+
 namespace MedicalReportEditor.Services;
 
 public interface IPdfService

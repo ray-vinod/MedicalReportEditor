@@ -1,3 +1,7 @@
+using System.Windows.Data;
+using System.Globalization;
+using System.Windows.Media;
+
 namespace MedicalReportEditor.Converters;
 
 public class BoolToColorConverter : IValueConverter

@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Windows.Data;
+
 namespace MedicalReportEditor.Converters;
 
 public class BoolToTextConverter : IValueConverter

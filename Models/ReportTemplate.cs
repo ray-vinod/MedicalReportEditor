@@ -1,3 +1,7 @@
+using MedicalReportEditor.Enums;
+using System.Collections.ObjectModel;
+using System.Xml.Serialization;
+
 namespace MedicalReportEditor.Models;
 
 public class ReportTemplate

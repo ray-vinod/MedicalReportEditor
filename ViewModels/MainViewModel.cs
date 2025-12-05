@@ -1,3 +1,15 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MedicalReportEditor.Enums;
+using MedicalReportEditor.Models;
+using MedicalReportEditor.Services;
+using MedicalReportEditor.Views;
+using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+
 namespace MedicalReportEditor.ViewModels;
 
 public partial class MainViewModel : ObservableObject

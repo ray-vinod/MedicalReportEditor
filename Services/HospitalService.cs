@@ -1,3 +1,7 @@
+using MedicalReportEditor.Models;
+using Microsoft.Extensions.Logging;
+using System.Configuration;
+
 namespace MedicalReportEditor.Services;
 
 public class HospitalService : IHospitalService

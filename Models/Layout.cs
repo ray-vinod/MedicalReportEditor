@@ -1,3 +1,5 @@
+using System.Xml.Serialization;
+
 namespace MedicalReportEditor.Models;
 
 public class Layout
